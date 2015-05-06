@@ -1,0 +1,48 @@
+*{
+	/*outline: 1px dotted red;*/
+}
+/* Main Primary color */
+.color-primary { color: #FFE500 }
+.bg-primary { background-color: #FFE500 }
+/* Main Secondary color (1) */
+.color-secondary-1 { color: #C3F500 }
+.bg-secondary-1 { background-color: #C3F500 }
+/* Main Secondary color (2) */
+.color-secondary-2 { color: #BD2C00 }
+.bg-secondary-2 { background-color: #BD2C00 }
+/* Main Secondary color (3) */
+.color-secondary-3 { color: #2C3E50 }
+.bg-secondary-3 { background-color: #2C3E50 }
+/* Main Complement color */
+.color-complement { color: #4F10AD }
+.bg-complement { background-color: #4F10AD }
+/* Additional colors */
+.color-gray{ color: darkgray }
+.bg-gray{ background-color: darkgray }
+.color-white{ color: white }
+.bg-white{ background-color: white }
+
+body{
+	padding-top: 52px;
+}
+h1{
+	font-size: 44px;
+}
+.navbar{
+	border-bottom: 1px solid darkgray;
+}
+	.navbar-nav > li > a:hover{
+		background-color: #FFE500;
+		color: #2C3E50;
+	}
+	.navbar-toggle .icon-bar{
+		width: 22px;
+		height: 2px;
+		display: block;
+		border-radius: 1px;
+		background-color: #FFE500;
+	}
+.img-profile{
+	width: 100%;
+	height: auto;
+}

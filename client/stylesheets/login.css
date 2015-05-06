@@ -1,0 +1,48 @@
+.content{
+	padding: 35px 100px;
+}
+	.content .row>*{
+		margin-bottom: 30px;
+	}
+	.container-fluid.hidden-xs{
+	height: 800px;
+	background: url("/images/sleep-home-md.jpg");
+	background-size: cover;
+}
+	.container-fluid.hidden-xs .content{
+		position: relative;
+		top: 30%;
+	}
+	span.border-top{
+		border-top: 1px solid #FFE500;
+		padding-top: 5px;
+	}
+div.visible-xs.bg-secondary-3 hr{
+	border: 0;
+	border-top: 1px solid #FFE500;
+	text-align: center;
+}
+#registration{
+	border: 2px solid #2C3E50;
+	border-radius: 25px;
+}
+	#registration img{
+		width: 30px;
+		height: 30px;
+		margin-left: 5px;
+	}
+	#registration input[type="submit"]{
+		margin: 10px 0 25px;
+		font-weight: bold;
+	}
+.features>*{
+	margin: 50px 0;
+}
+	.features-content img{
+		width: 70px;
+		height: 70px;
+		margin: 0 10px;
+	}
+	img[src="/images/phone-feature.png"]{
+		margin: 0 auto;
+	}

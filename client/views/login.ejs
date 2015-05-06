@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>temetSleep</title>
+	<!-- Latest compiled and minified jQuery -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+	<!-- Latest compiled and minified jQuery UI -->
+	<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+	<script type="text/javascript">
+
+	$(document).ready(function(){
+
+		$('select').change(function(){
+			$('select option:selected').each(function(){
+				$('img.'+this.value).effect('shake', {times: 1, distance: 5, direction: 'up'});
+				$('#registration form').attr('action', '/auth/'+this.value);
+			});
+		});
+
+	});
+
+	</script>
+	<!-- Stylesheet -->
+	<link rel="stylesheet" type="text/css" href="/stylesheets/main.css">
+	<link rel="stylesheet" type="text/css" href="/stylesheets/login.css">
+</head>
+<body>
+	<!-- Navigation -->
+	<nav class="navbar navbar-fixed-top bg-secondary-3" role="navigation">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand page-scroll" href="/">
+					<span class="h4 color-white">temet<span class="color-primary">Sleep</span></span>
+				</a>
+			</div>
+
+			<!-- Collect the nav links, forms, and other content for toggling -->
+			<div class="collapse navbar-collapse navbar-right navbar-main-collapse" id="bs-example-navbar-collapse-1">
+				<ul class="nav navbar-nav">
+					<!-- Hidden li included to remove active class from about link when scrolled up past about section -->
+					<li class="hidden">
+						<a href="/"></a>
+					</li>
+					<li>
+						<a class="color-primary" href="/about"><span class="h4">About</span></a>
+					</li>
+					<li>
+						<a class="color-primary" href="/login"><span class="h4">Login</span></a>
+					</li>
+				</ul>
+			</div>
+			<!-- /.navbar-collapse -->
+		</div>
+		<!-- /.container -->
+	</nav>
+
+	<!-- Header for views < md -->
+	<div class="container-fluid text-center visible-xs visible-sm content">
+		<h1>temet<span class="color-primary">Sleep</span></h1>
+		<hr>
+		<h4>Welcome to a better understanding of your sleep</h4>
+	</div>
+	<!-- Header for views >= md -->
+	<div class="container-fluid hidden-xs hidden-sm color-secondary-3">
+		<div class="content">
+			<h1>temet<span class="color-primary">Sleep</span></h1>
+			<span class="h3 border-top">Welcome to a better understanding of your sleep</span>
+		</div>
+	</div>
+
+	<!-- Content 1 -->
+	<div class="container-fluid content">
+		<div class="row">
+			<div class="col-md-6 text-center">
+				<h2 class="color-secondary-3">Put more muscle underneath visualing how you sleep</h2>
+				<hr>
+				<h4 class="text-muted">At temetSleep, we're data-hungry and passionate about visualizing numbers. Take a moment to link your device in, and let us show you more about your time asleep.</h4>
+			</div>
+
+			<!-- Form for connecting device  -->
+			<div class="col-xs-offset-3 col-xs-6 col-md-offset-2 col-md-4 bg-secondary-3" id="registration">
+				<form class="color-white" action="/" method="get">
+					<h3 class="text-center">Connect your device</h3>
+
+					<div class="form-group">
+						<label for="device">Device:*</label>
+						<select class="form-control" name="auth">
+							<option>--select device--</option>
+							<option value="fitbit">Fitbit</option>
+						</select>
+					</div>
+
+					<img class="up img-circle pull-left" src="/images/up-icon.png">
+					<img class="fitbit img-circle pull-left" src="/images/fitbit1-icon.png">
+					<img class="nikefuel img-circle pull-left" src="/images/nikefuel-icon.png">
+					<img class="img-circle pull-left" src="/images/fitbit2-icon.png">
+
+					<input class="form-control btn bg-primary" type="submit" value="Link up">
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- Content 2  -->
+	<div class="container-fluid bg-secondary-3 content">
+		<div class="row">
+			<!-- Features Left  -->
+			<div class="features col-md-4 col-sm-6">
+					<div class="text-left features-content">
+						<img class="pull-left img-circle " src="/images/fitbit1-icon.png">
+						<span class="h5 color-primary">We're obsessed with data presentation. <span class="color-gray">See tables and graphs rendered in beautifully vibrant colors.</span></span>
+					</div>
+					<div class="text-left features-content">
+						<img class="pull-left img-circle " src="/images/fitbit1-icon.png">
+						<span class="h5 color-primary">Work towards the best version of you. <span class="color-gray">Set challenges. Conquer them and share your victories with friends.</span></span>
+					</div>
+					<div class="text-left features-content">
+						<img class="pull-left img-circle " src="/images/fitbit1-icon.png">
+						<span class="h5 color-primary">Talk with other fitness enthusiasts. <span class="color-gray">Take advantage of the chatroom feature by socializing and sharing tips.</span></span>
+					</div>
+			</div>
+			<!-- Features Right  -->
+			<div class="features col-md-4 col-md-push-4 col-sm-6">
+					<div class="text-left features-content">
+						<img class="pull-right img-circle " src="/images/fitbit1-icon.png">
+						<span class="h5 color-primary">Connect with different technologies. <span class="color-gray">We're forging connections with companies like Fitbit.</span></span>
+					</div>
+					<div class="text-left features-content">
+						<img class="pull-right img-circle " src="/images/fitbit1-icon.png">
+						<span class="h5 color-primary">Become a part of the open-source movement. <span class="color-gray">This app was developed under the MIT open-source license.</span></span>
+					</div>
+					<div class="text-left features-content">
+						<img class="pull-right img-circle " src="/images/fitbit1-icon.png">
+						<span class="h5 color-primary">Heart rate monitoring coming soon. <span class="color-gray">We'll soon have heart rate data up and running for supported devices.</span></span>
+					</div>
+			</div>
+			<!-- Features Phone  -->
+			<div class="col-xs-12 col-md-4 col-md-pull-4">
+				<img class="img-responsive" src="/images/phone-feature.png">
+			</div>
+		</div>
+	</div>
+</body>
+</html>

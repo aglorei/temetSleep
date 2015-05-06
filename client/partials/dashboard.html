@@ -1,0 +1,67 @@
+<script type="text/javascript">
+	$(document).ready(function(){
+		var width = $('#dashboardChartContainer').width();
+		$('#dashboardChart').attr('width', width);
+		$('#dashboardChart').attr('height', width);
+
+		$(window).on('resize', function(){
+			var width = $('#dashboardChartContainer').width();
+			$('#dashboardChart svg').attr('width', width);
+			$('#dashboardChart svg').attr('height', width);
+		});
+	});
+</script>
+
+<div class="container">
+	<div class="row">
+		<!-- Profile Box -->
+		<div class="col-sm-4 color-secondary-2">
+			<!-- Full Name -->
+			<h3 class="color-secondary-3" ng-bind="profile.fullName"></h3>
+
+			<div class="row">
+				<div class="col-xs-3 col-sm-6">
+					<!-- Avatar -->
+					<img class="img-rounded img-profile" ng-src="{{profile.avatar150}}">
+				</div>
+			</div>
+
+			<!-- Nickname -->
+			<h4 ng-bind="profile.nickname"></h4>
+
+			<!-- Location -->
+			<h4><span ng-bind="profile.city"></span>, <span ng-bind="profile.state"></span></h4>
+
+			<!-- Joined -->
+			<h4>Joined: <span class="color-secondary-3" ng-bind="profile.memberSince | date:'longDate'"></span></h4>
+
+			<!-- About me -->
+			<p class="color-secondary-3" ng-bind="profile.aboutMe"></p>
+		</div>
+
+		<!-- Today's sleep -->
+		<div id="dashboardChartContainer" class="col-sm-8 color-secondary-2">
+			<h3>Last night's sleep</h3>
+
+			<!-- Sleep Summary -->
+			<h4>Total Sleep: <span class="color-secondary-3">{{Math.floor(summary.totalMinutesAsleep/60)}} hours {{summary.totalMinutesAsleep%60}} minutes</span></h4>
+
+			<!-- Multi-bar Vertical Chart -->
+			<nvd3-multi-bar-horizontal-chart
+				data="minuteData"
+				id="dashboardChart"
+				xAxisTickFormat="xAxisTickFormatFunction()"
+				yAxisTickFormat="yAxisTickFormatFunction()"
+				stacked="true"
+				showLegend="true"
+				showControls="true"
+				interactive="true"
+				color="colorFunction()"
+				legendcolor="colorFunction()">
+					<svg></svg>
+			</nvd3-multi-bar-horizontal-chart>
+
+			<h4>Restless/Awake <span class="pull-right">Asleep</span></h4>
+		</div>
+	</div>
+</div>

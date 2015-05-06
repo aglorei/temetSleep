@@ -1,0 +1,115 @@
+<script type="text/javascript">
+	$(document).ready(function(){
+
+		var rightWidth = $('#rightContainer').width();
+		$('#daySeriesChart').attr('width', rightWidth);
+		$('#daySeriesChart').attr('height', rightWidth);
+
+		var leftWidth = $('#leftContainer').width();
+		$('#timeSeriesChart').attr('width', leftWidth);
+		$('#timeSeriesChart').attr('height', leftWidth);
+
+		$(window).on('resize', function(){
+			leftWidth = $('#leftContainer').width();
+			$('#timeSeriesChart svg').attr('width', leftWidth);
+			$('#timeSeriesChart svg').attr('height', leftWidth);
+
+			rightWidth = $('#rightContainer').width();
+			$('#daySeriesChart svg').attr('width', rightWidth);
+			$('#daySeriesChart svg').attr('height', rightWidth);
+		});
+
+		var today = new Date().toISOString().slice(0,10);
+
+		$('#daySeries').attr('max', today);
+		$('#timeSeries-base').attr('max', today);
+		$('#timeSeries-end').attr('max', today);
+	});
+</script>
+
+<div class="container">
+	<div class="row">
+		<!-- Time-Series Stats -->
+		<div id="leftContainer" class="col-sm-5 color-secondary-2">
+			<h3>Time-Series Stats</h3>
+
+			<p class="color-secondary-3">Select a time period in order to view ranged data on sleep duration.</p>
+
+			<!-- timeSeries Input -->
+			<form ng-submit="getTime()">
+				<!-- Base Date Input -->
+				<div class="form-group">
+					<label>Base Date: </label>
+					<input id="timeSeries-base" class="form-control" type="date" ng-model="timeSeries.base">
+				</div>
+				<!-- End Date Input -->
+				<div class="form-group">
+					<label>End Date: </label>
+					<input id="timeSeries-end" class="form-control" type="date" ng-model="timeSeries.end">
+				</div>
+
+				<input class="btn btn-default color-white bg-secondary-3" type="submit" value="Render">
+			</form>
+
+			<!-- Area Line Chart -->
+			<nvd3-line-chart
+				data="timeData"
+				id="timeSeriesChart"
+				showXAxis="true"
+				showYAxis="true"
+				xAxisTickFormat="xAxisTickFormat_Time_Format()"
+				showLegend="true"
+				interactive="true"
+				tooltips="true"
+				isArea="true"
+				useInteractiveGuideLine="true"
+				color="colorFunction()"
+				legendcolor="colorFunction()"
+				objectEquality="true"
+				transitionDuration="1000">
+					<svg></svg>
+			</nvd3-line-chart>
+		</div>
+
+		<!-- Daily-Level Stats -->
+		<div id="rightContainer" class="col-sm-7 color-secondary-2">
+			<h3>Day-Level Stats</h3>
+
+			<p class="color-secondary-3">Your daily stats are split into individual sleep sessions, which comprise a "Main" set and several "Naps". Sets are visually superimposed in order to observe parallel trends in waking states.</p>
+
+			<p class="color-secondary-3">For "Restless" minutes, bar lengths are mirrored onto the left. "Awake" minutes are first doubled and then mirrored onto the left.</p>
+
+			<!-- daySeries Input -->
+			<form class="form-inline" ng-submit="getDaily()">
+				<div class="form-group">
+					<label>Date: </label>
+					<input id="daySeries" class="form-control" type="date" ng-model="daySeries">
+				</div>
+
+				<input class="btn btn-default color-white bg-secondary-3" type="submit" value="Render">
+			</form>
+
+			<!-- Sleep Summary -->
+			<h4>Total Sleep: <span class="color-secondary-3">{{Math.floor(summary.totalMinutesAsleep/60)}} hours {{summary.totalMinutesAsleep%60}} minutes</span></h4>
+
+			<!-- Multi-bar Vertical Chart -->
+			<nvd3-multi-bar-horizontal-chart
+				data="minuteData"
+				id="daySeriesChart"
+				xAxisTickFormat="xAxisTickFormatFunction()"
+				yAxisTickFormat="yAxisTickFormatFunction()"
+				stacked="true"
+				showLegend="true"
+				showControls="true"
+				interactive="true"
+				color="colorFunction()"
+				legendcolor="colorFunction()"
+				objectEquality="true"
+				transitionDuration="1000">
+					<svg></svg>
+			</nvd3-multi-bar-horizontal-chart>
+
+			<h4>Restless/Awake <span class="pull-right">Asleep</span></h4>
+		</div>
+	</div>
+</div>
