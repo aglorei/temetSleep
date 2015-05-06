@@ -1,29 +1,35 @@
 <script type="text/javascript">
 	$(document).ready(function(){
 
-		var rightWidth = $('#rightContainer').width();
-		$('#daySeriesChart').attr('width', rightWidth);
-		$('#daySeriesChart').attr('height', rightWidth);
+		function resizeSVG()
+		{
+			var leftWidth = $('#leftContainer').width();
+			$('#awakeSeriesChart').attr('height', leftWidth);
+			$('#awakeSeriesChart svg').width(leftWidth);
+			$('#awakeSeriesChart svg').height(leftWidth);
+			$('#scatterSeriesChart svg').width(leftWidth);
+			$('#scatterSeriesChart svg').height(leftWidth);
 
-		var leftWidth = $('#leftContainer').width();
-		$('#timeSeriesChart').attr('width', leftWidth);
-		$('#timeSeriesChart').attr('height', leftWidth);
+			var rightWidth = $('#rightContainer').width();
+			$('#daySeriesChart svg').width(rightWidth);
+			$('#daySeriesChart svg').height(rightWidth);
+			$('.efficiencyChart svg').width(rightWidth);
+			$('.efficiencyChart svg').height(rightWidth);
+		}
+
+		resizeSVG();
 
 		$(window).on('resize', function(){
-			leftWidth = $('#leftContainer').width();
-			$('#timeSeriesChart svg').attr('width', leftWidth);
-			$('#timeSeriesChart svg').attr('height', leftWidth);
-
-			rightWidth = $('#rightContainer').width();
-			$('#daySeriesChart svg').attr('width', rightWidth);
-			$('#daySeriesChart svg').attr('height', rightWidth);
+			resizeSVG();
 		});
 
 		var today = new Date().toISOString().slice(0,10);
 
 		$('#daySeries').attr('max', today);
-		$('#timeSeries-base').attr('max', today);
-		$('#timeSeries-end').attr('max', today);
+		$('#awakeSeries-base').attr('max', today);
+		$('#awakeSeries-end').attr('max', today);
+		$('#scatterSeries-base').attr('max', today);
+		$('#scatterSeries-end').attr('max', today);
 	});
 </script>
 
@@ -35,17 +41,17 @@
 
 			<p class="color-secondary-3">Select a time period in order to view ranged data on sleep duration.</p>
 
-			<!-- timeSeries Input -->
-			<form ng-submit="getTime()">
+			<!-- awakeSeries Input -->
+			<form ng-submit="getAwake()">
 				<!-- Base Date Input -->
 				<div class="form-group">
 					<label>Base Date: </label>
-					<input id="timeSeries-base" class="form-control" type="date" ng-model="timeSeries.base">
+					<input id="awakeSeries-base" class="form-control" type="date" ng-model="awakeSeries.base">
 				</div>
 				<!-- End Date Input -->
 				<div class="form-group">
 					<label>End Date: </label>
-					<input id="timeSeries-end" class="form-control" type="date" ng-model="timeSeries.end">
+					<input id="awakeSeries-end" class="form-control" type="date" ng-model="awakeSeries.end">
 				</div>
 
 				<input class="btn btn-default color-white bg-secondary-3" type="submit" value="Render">
@@ -53,11 +59,11 @@
 
 			<!-- Area Line Chart -->
 			<nvd3-line-chart
-				data="timeData"
-				id="timeSeriesChart"
+				data="awakeData"
+				id="awakeSeriesChart"
 				showXAxis="true"
 				showYAxis="true"
-				xAxisTickFormat="xAxisTickFormat_Time_Format()"
+				xAxisTickFormat="xAxisTickFormat_Date_Format()"
 				showLegend="true"
 				interactive="true"
 				tooltips="true"
@@ -66,9 +72,89 @@
 				color="colorFunction()"
 				legendcolor="colorFunction()"
 				objectEquality="true"
-				transitionDuration="1000">
+				transitionDuration="1000"
+				noData="Retrieving Data...">
 					<svg></svg>
 			</nvd3-line-chart>
+
+			<p class="color-secondary-3">Select independent, dependent, and magnitude variables for selected duration in order to visualize ranged data on sleep characteristics.</p>
+			<p class="color-secondary-3">* The following equation to calculate your sleep efficiency: 100 * time asleep / (time asleep + time restless + time awoken during sleep)</p>
+
+			<!-- scatterSeries Input -->
+			<form ng-submit="getScatter()">
+				<div class="col-xs-6">
+					<!-- Resource Inputs -->
+					<div class="form-group">
+						<label>x: </label>
+						<select id="scatterSeries-x" class="form-control" ng-model="scatterSeries.x">
+							<option value="timeInBed">Time in Bed</option>
+							<option value="minutesAsleep">Minutes Asleep</option>
+							<option value="awakeningsCount">Awakening Count</option>
+							<option value="minutesAwake">Minutes Awake</option>
+							<option value="minutesToFallAsleep">Minutes to Fall Asleep</option>
+							<option value="efficiency">Efficiency</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label>y: </label>
+						<select id="scatterSeries-y" class="form-control" ng-model="scatterSeries.y">
+							<option value="timeInBed">Time in Bed</option>
+							<option value="minutesAsleep">Minutes Asleep</option>
+							<option value="awakeningsCount">Awakening Count</option>
+							<option value="minutesAwake">Minutes Awake</option>
+							<option value="minutesToFallAsleep">Minutes to Fall Asleep</option>
+							<option value="efficiency">Efficiency</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label>Size: </label>
+						<select id="scatterSeries-size" class="form-control" ng-model="scatterSeries.size">
+							<option value="timeInBed">Time in Bed</option>
+							<option value="minutesAsleep">Minutes Asleep</option>
+							<option value="awakeningsCount">Awakening Count</option>
+							<option value="minutesAwake">Minutes Awake</option>
+							<option value="minutesToFallAsleep">Minutes to Fall Asleep</option>
+							<option value="efficiency">Efficiency</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="col-xs-6">
+					<!-- Base Date Input -->
+					<div class="form-group">
+						<label>Base Date: </label>
+						<input id="scatterSeries-base" class="form-control" type="date" ng-model="scatterSeries.base">
+					</div>
+					<!-- End Date Input -->
+					<div class="form-group">
+						<label>End Date: </label>
+						<input id="scatterSeries-end" class="form-control" type="date" ng-model="scatterSeries.end">
+					</div>
+					<!-- Form Input (wrapped for aesthetics) -->
+					<div class="form-group">
+						<label>&nbsp</label>
+						<input class="btn btn-default form-control color-white bg-secondary-3" type="submit" value="Render">
+					</div>
+				</div>
+			</form>
+
+			<!-- Scatter Chart -->
+			<nvd3-scatter-chart
+				data="scatterData"
+				id="scatterSeriesChart"
+				showDistX="true"
+				showDistY="true"
+				xAxisLabel="{{scatterSeries.x}}"
+				yAxisLabel="{{scatterSeries.y}}"
+				margin='{left:78,top:20,bottom:60,right:20}'
+				interactive="true"
+				tooltips="true"
+				color="colorFunction()"
+				objectEquality="true"
+				transitionDuration="1000"
+				noData="Retrieving Data...">
+					<svg></svg>
+			</nvd3-scatter-chart>
 		</div>
 
 		<!-- Daily-Level Stats -->
@@ -110,6 +196,22 @@
 			</nvd3-multi-bar-horizontal-chart>
 
 			<h4>Restless/Awake <span class="pull-right">Asleep</span></h4>
+
+			<nvd3-pie-chart
+				ng-repeat="chart in efficiencyData track by $index"
+				data="chart"
+				id="efficiencyChart{{$index}}"
+				class="efficiencyChart"
+				margin="{left:0,top:0,bottom:0,right:0}"
+				x="xFunction()"
+				y="yFunction()"
+				showLegend="true"
+				tooltips="true"
+				color="colorFunction()"
+				objectEquality="true"
+				transitionDuration="1000">
+					<svg></svg>
+			</nvd3-pie-chart>
 		</div>
 	</div>
 </div>

@@ -10,6 +10,10 @@ temet_account.config(function ($routeProvider){
 			templateUrl: '/partials/stats.html',
 			controller: 'usersController'
 		})
+		.when('/alarms', {
+			templateUrl: '/partials/alarms.html',
+			controller: 'usersController'
+		})
 		.when('/about', {
 			templateUrl: '/partials/about.html'
 		});
@@ -44,7 +48,9 @@ temet_account.factory('userFactory', function ($http){
 	var profile = {};
 	var summary = {};
 	var minuteData = [];
-	var timeData = [];
+	var efficiencyData = [];
+	var awakeData = [];
+	var scatterData = [];
 
 	factory.getProfile = function (callback){
 		// only send request if profile is empty
@@ -58,33 +64,76 @@ temet_account.factory('userFactory', function ($http){
 		}
 	};
 
-	factory.getDaily = function (time, callback){
-		// currently accessing on each controller load
-		$http.get('/daily/'+time).success(function (data){
-			minuteData = minuteCollection(data.sleep);
-			summary = data.summary;
-			callback(minuteData,summary);
-		});
+	factory.getDaily = function (date, callback){
+		// only send initializing request if minuteData is empty
+		if (date == 'today' && minuteData.length){
+			callback(minuteData, efficiencyData, summary);
+		} else {
+			$http.get('/daily/'+date).success(function (data){
+				minuteData = dailyCollection(data.sleep)[0];
+				efficiencyData = dailyCollection(data.sleep)[1];
+				summary = data.summary;
+				callback(minuteData, efficiencyData, summary);
+			});
+		}
 	};
 
-	factory.getTime = function (base, end, callback){
-		// currently accessing on each controller load
-		timeData = [];
+	factory.getAwake = function (base, end, callback){
+		// only send initializing request if awakeData is empty
+		if (base == 'today' && awakeData.length){
+			callback(awakeData);
+		} else {
+			// reset in order to push new data
+			awakeData = [];
+			// nest callbacks!
+			// minutesAwake call
+			$http.get('/time/minutesAwake/'+base+'/'+end).success(function (data){
+				awakeData.push(awakeCollection('minutesAwake', data));
 
-		$http.get('/time/minutesAwake/'+base+'/'+end).success(function (data){
-			timeData.push(timeCollection('minutesAwake', data));
-		});
-		$http.get('/time/minutesAsleep/'+base+'/'+end).success(function (data){
-			timeData.push(timeCollection('minutesAsleep', data));
-		});
+				// minutesAsleep call
+				$http.get('/time/minutesAsleep/'+base+'/'+end).success(function (data){
+					awakeData.push(awakeCollection('minutesAsleep', data));
+				});
 
-		callback(timeData);
+				callback(awakeData);
+			});
+		}
+	};
+
+	factory.getScatter = function (base, end, x, y, size, callback){
+		// only send initializing request if scatterData is empty
+		if (base == 'today' && scatterData.length){
+			callback(scatterData);
+		} else {
+			var dataSet = [];
+			var resourceSet = [x, y, size];
+
+			// nest callbacks!
+			// resource x call
+			$http.get('/time/'+x+'/'+base+'/'+end).success(function (dataX){
+				dataSet.push(dataX);
+
+				// resource y call
+				$http.get('/time/'+y+'/'+base+'/'+end).success(function (dataY){
+					dataSet.push(dataY);
+
+					// resource size call
+					$http.get('/time/'+size+'/'+base+'/'+end).success(function (dataSize){
+						dataSet.push(dataSize);
+
+						scatterData = scatterCollection(resourceSet, dataSet);
+						callback(scatterData);
+					});
+				});
+			});
+		}
 	};
 
 	// daily-series collection of minute data
-	function minuteCollection(sleep)
+	function dailyCollection(sleep)
 	{
-		var result = [];
+		var minutes = [];
+		var efficiency = [];
 		var mainLength = sleep[0].timeInBed;
 
 		// set maximum length for sleepSets based on mainSleep
@@ -96,13 +145,27 @@ temet_account.factory('userFactory', function ($http){
 			}
 		}
 
-		// loop through each sleepSet
+		// loop through each minuteSet
 		for (var j=0; j<sleep.length; j++)
 		{
-			var sleepSet = {
-				'key': (sleep[j].isMainSleep ? 'Main ' : 'Nap ') + sleep[j].minuteData[0].dateTime + ' (' + sleep[j].timeInBed + ' min)' ,
-				'values': []
+			var minuteSet = {
+				key: (sleep[j].isMainSleep ? 'Main ' : 'Nap ') + sleep[j].minuteData[0].dateTime + ' (' + sleep[j].timeInBed + ' min)' ,
+				values: []
 			};
+			var efficiencySet = [
+				{
+					key: 'Time Asleep',
+					y: sleep[j].minutesAsleep
+				},
+				{
+					key: 'Time Restless',
+					y: sleep[j].restlessDuration
+				},
+				{
+					key: 'Time Awake',
+					y: sleep[j].awakeDuration
+				}
+			];
 
 			// declare constants for gaussian function for aesthetics (http://en.wikipedia.org/wiki/Gaussian_function)
 			var a = 100;
@@ -119,30 +182,31 @@ temet_account.factory('userFactory', function ($http){
 					switch (sleep[j].minuteData[k].value)
 					{
 						case '1':
-							sleepSet.values.push([k, gaussian]);
+							minuteSet.values.push([k, gaussian]);
 							break;
 						case '2':
-							sleepSet.values.push([k, -gaussian]);
+							minuteSet.values.push([k, -gaussian]);
 							break;
 						case '3':
-							sleepSet.values.push([k, -2 * gaussian]);
+							minuteSet.values.push([k, -2 * gaussian]);
 							break;
 					}
 				}
 				else
 				{
-					sleepSet.values.push([k, 0]);
+					minuteSet.values.push([k, 0]);
 				}
 			}
 
-			result.push(sleepSet);
+			minutes.push(minuteSet);
+			efficiency.push(efficiencySet);
 		}
 
-		return result;
+		return [minutes, efficiency];
 	}
 
-	// time-series collection of resource data
-	function timeCollection (resource, data)
+	// awake-series collection of resource data
+	function awakeCollection (resource, data)
 	{
 		var series = {
 			'key': resource,
@@ -157,6 +221,29 @@ temet_account.factory('userFactory', function ($http){
 		return series;
 	}
 
+	// scatter-series collection of resource data
+	function scatterCollection (resourceSet, dataSet)
+	{
+		var dataLength = dataSet[0]['sleep-'+resourceSet[0]].length;
+		var scatterData = [];
+
+		for (var i=0; i<dataLength; i++)
+		{
+			var daySet = {
+				key: dataSet[0]['sleep-'+resourceSet[0]][i].dateTime,
+				values: [{
+					x: +dataSet[0]['sleep-'+resourceSet[0]][i].value,
+					y: +dataSet[1]['sleep-'+resourceSet[1]][i].value,
+					size: +dataSet[2]['sleep-'+resourceSet[2]][i].value
+				}]
+			};
+
+			scatterData.push(daySet);
+		}
+
+		return scatterData;
+	}
+
 	return factory;
 });
 
@@ -169,17 +256,24 @@ temet_account.controller('usersController', function ($scope, userFactory){
 		this.setDate(this.getDate()-1);
 		return this;
 	}).call(new Date());
-	var weekAgo = (function(){
-		this.setDate(this.getDate()-7);
+	var monthAgo = (function(){
+		this.setDate(this.getDate()-30);
 		return this;
 	}).call(new Date());
 
 	// initialize scope values
 	$scope.Math = Math;
 	$scope.daySeries = yesterday;
-	$scope.timeSeries = {
+	$scope.awakeSeries = {
 		resource: 'efficiency',
-		base: weekAgo,
+		base: monthAgo,
+		end: yesterday
+	};
+	$scope.scatterSeries = {
+		x: 'minutesAsleep',
+		y: 'minutesAwake',
+		size: 'efficiency',
+		base: monthAgo,
 		end: yesterday
 	};
 
@@ -188,27 +282,40 @@ temet_account.controller('usersController', function ($scope, userFactory){
 		$scope.profile = profile;
 	});
 
-	userFactory.getDaily('today', function (minuteData, summary){
+	userFactory.getDaily('today', function (minuteData, efficiencyData, summary){
 		$scope.minuteData = minuteData;
+		$scope.efficiencyData = efficiencyData;
 		$scope.summary = summary;
 	});
 
-	userFactory.getTime('today', '7d', function (timeData){
-		$scope.timeData = timeData;
-		console.log($scope.timeData);
+	userFactory.getAwake('today', '30d', function (awakeData){
+		$scope.awakeData = awakeData;
+	});
+
+	userFactory.getScatter('today', '30d', 'minutesAsleep', 'minutesAwake', 'efficiency', function (scatterData){
+		$scope.scatterData = scatterData;
+		console.log($scope.scatterData);
 	});
 
 	// scope functions
 	$scope.getDaily = function (){
-		userFactory.getDaily($scope.daySeries.toISOString().slice(0,10), function (minuteData, summary){
+		userFactory.getDaily($scope.daySeries.toISOString().slice(0,10), function (minuteData, efficiencyData, summary){
 			$scope.minuteData = minuteData;
+			$scope.efficiencyData = efficiencyData;
 			$scope.summary = summary;
 		});
 	};
 
-	$scope.getTime = function (){
-		userFactory.getTime($scope.timeSeries.base.toISOString().slice(0,10), $scope.timeSeries.end.toISOString().slice(0,10), function (timeData){
-			$scope.timeData = timeData;
+	$scope.getAwake = function (){
+		userFactory.getAwake($scope.awakeSeries.base.toISOString().slice(0,10), $scope.awakeSeries.end.toISOString().slice(0,10), function (awakeData){
+			$scope.awakeData = awakeData;
+		});
+	};
+
+	$scope.getScatter = function (){
+		userFactory.getScatter($scope.scatterSeries.base.toISOString().slice(0,10), $scope.scatterSeries.end.toISOString().slice(0,10), $scope.scatterSeries.x, $scope.scatterSeries.y, $scope.scatterSeries.size, function (scatterData){
+			$scope.scatterData = scatterData;
+			console.log($scope.scatterData);
 		});
 	};
 
@@ -218,13 +325,25 @@ temet_account.controller('usersController', function ($scope, userFactory){
 		};
 	};
 
+	$scope.xFunction = function(){
+		return function(d) {
+			return d.key;
+		};
+	};
+
+	$scope.yFunction = function(){
+		return function(d){
+			return d.y;
+		};
+	};
+
 	$scope.xAxisTickFormatFunction = function (){
 		return function(d) {
 			return d[0];
 		};
 	};
 
-	$scope.xAxisTickFormat_Time_Format = function(){
+	$scope.xAxisTickFormat_Date_Format = function(){
 		return function(d){
 			return d3.time.format('%x')(new Date(d));
 		};
