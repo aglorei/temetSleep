@@ -16,5 +16,6 @@ On the front-end, Angular handles the incoming data, while D3JS, nvd3, and angul
   * Consider an algorithm that suggests "healthy" alarms for waking times, possibly based off of an input that allows the user to state the time that they plan on sleeping that day
 * Manage API calls (there are currently 8 calls at login). This might involve:
   * Adding resource subscriptions through Fitbit's API so that the server listens for updates. This can involve storing data in MongoDB until the server recieves an update, at which point it will pull the entry and update it
+    * MAYBE(!) link those subscriptions to socket.io
   * Cacheing data
   * Further modularizing Angular's handle on the data by adding more controllers, and separating data loads into more view partials
