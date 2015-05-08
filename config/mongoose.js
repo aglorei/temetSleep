@@ -1,12 +1,11 @@
-var config = require('./../config.js');
 var mongoose = require('mongoose');
 var fs = require('fs');
 var path = require('path');
 
-mongoose.connect(config.production.db);
+mongoose.connect(process.env.db);
 
 mongoose.connection.on('open', function (){
-	console.log('Mongoose default connection open to mongodb://localhost/temet_db');
+	console.log('Mongoose connection open');
 });
 
 // declare path for folder containing models

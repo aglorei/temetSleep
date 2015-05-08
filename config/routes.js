@@ -1,4 +1,3 @@
-var config = require('./../config.js');
 var passport = require('passport');
 var passportFitbit = require('./fitbitAuth.js');
 var https = require('https');
@@ -110,7 +109,7 @@ module.exports = function (app){
 
 		// set request parameters
 		var parameters = {
-			'oauth_consumer_key': config.production.FITBIT_CONSUMER_KEY,
+			'oauth_consumer_key': process.env.FITBIT_CONSUMER_KEY,
 			'oauth_nonce': nonce,
 			'oauth_signature_method': 'HMAC-SHA1',
 			'oauth_timestamp': time,
@@ -119,7 +118,7 @@ module.exports = function (app){
 		};
 
 		// generate oauth signature
-		encodedSignature = oauthSignature.generate(httpsMethod, 'https://' + host + path, parameters, config.production.FITBIT_CONSUMER_SECRET, tokenSecret);
+		encodedSignature = oauthSignature.generate(httpsMethod, 'https://' + host + path, parameters, process.env.FITBIT_CONSUMER_SECRET, tokenSecret);
 
 		// create header
 		var oauthString = 'OAuth ';

@@ -1,4 +1,3 @@
-var config = require('./../config.js');
 var passport = require('passport');
 var FitbitStrategy = require('passport-fitbit').Strategy;
 
@@ -21,9 +20,9 @@ module.exports = function (){
 	// USE FITBIT STRATEGY WITHIN PASSPORT
 	// strategies in passport require a 'verify' function, which accept credentials (token, tokenSecret, and fitbit profile), and invoke a callback with a user object
 	passport.use(new FitbitStrategy({
-			consumerKey: config.production.FITBIT_CONSUMER_KEY,
-			consumerSecret: config.production.FITBIT_CONSUMER_SECRET,
-			callbackURL: 'http://localhost:8000/auth/fitbit/callback'
+			consumerKey: process.env.FITBIT_CONSUMER_KEY,
+			consumerSecret: process.env.FITBIT_CONSUMER_SECRET,
+			callbackURL: 'https://powerful-tundra-4772.herokuapp.com/'
 		},
 		function (token, tokenSecret, profile, done){
 			User.findOne({

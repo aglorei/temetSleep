@@ -1,5 +1,4 @@
 require('./config/mongoose.js');
-var config = require('./config.js');
 var express = require('express');
 var session = require('express-session');
 var bodyParser = require('body-parser');
@@ -8,7 +7,7 @@ var path = require('path');
 var app = express();
 
 app.use(session({
-	secret: config.production.session_secret,
+	secret: process.env.session_secret,
 	resave: false,
 	saveUninitialized: true
 }));
@@ -22,6 +21,6 @@ app.set('view engine','ejs');
 
 var routes = require('./config/routes.js')(app);
 
-var server = app.listen(8000, function(){
-	console.log('listening to port 8000');
+var server = app.listen(process.env.port, function(){
+	console.log('listening to port ', process.env.port);
 });
