@@ -62,3 +62,4 @@ node_modules
  
 # Config file for temetSleep
 config.js
+process.env
