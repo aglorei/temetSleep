@@ -22,7 +22,7 @@ module.exports = function (){
 	passport.use(new FitbitStrategy({
 			consumerKey: process.env.FITBIT_CONSUMER_KEY,
 			consumerSecret: process.env.FITBIT_CONSUMER_SECRET,
-			callbackURL: 'https://powerful-tundra-4772.herokuapp.com/auth/fitbit/callback'
+			callbackURL: 'https://temetsleep.herokuapp.com/auth/fitbit/callback'
 		},
 		function (token, tokenSecret, profile, done){
 			User.findOne({
