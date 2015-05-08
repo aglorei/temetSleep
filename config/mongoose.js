@@ -2,9 +2,13 @@ var mongoose = require('mongoose');
 var fs = require('fs');
 var path = require('path');
 
-mongoose.connect(process.env.MONGOLAB_URI);
-
-console.log(process.env.MONGOLAB_URI);
+mongoose.connect(process.env.MONGOLAB_URI, function (error, response){
+	if (error) {
+		console.log ('ERROR connecting to: ' + process.env.MONGOLAB_URI + '. ' + error);
+	} else {
+		console.log ('Succeeded connected to: ' + process.env.MONGOLAB_URI);
+	}
+});
 
 mongoose.connection.on('open', function (){
 	console.log('Mongoose connection open to MongoDB');
