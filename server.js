@@ -20,3 +20,9 @@ app.set('views', path.join(__dirname,'client/views'));
 app.set('view engine','ejs');
 
 var routes = require('./config/routes.js')(app);
+
+var port = process.env.PORT || 8080;
+
+var server = app.listen(port, function(){
+	console.log('listening to port:', port);
+});
