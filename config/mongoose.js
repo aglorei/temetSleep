@@ -4,6 +4,8 @@ var path = require('path');
 
 mongoose.connect(process.env.MONGOLAB_URI);
 
+console.log(process.env.MONGOLAB_URI);
+
 mongoose.connection.on('open', function (){
 	console.log('Mongoose connection open to MongoDB');
 });
