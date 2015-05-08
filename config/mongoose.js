@@ -5,7 +5,7 @@ var path = require('path');
 mongoose.connect(process.env.db);
 
 mongoose.connection.on('open', function (){
-	console.log('Mongoose connection open');
+	console.log('Mongoose connection open to, ', process.env.db);
 });
 
 // declare path for folder containing models
