@@ -63,30 +63,6 @@ module.exports = function (app){
 		});
 	});
 
-	// // get activities stats (includes Lifetime and Best achievement values)
-	// app.get('/stats', ensureAuthenticated, function (request, response){
-	// 	httpsRequest('GET', 'api.fitbit.com', '/1/user/-/activities.json', request.user.token, request.user.tokenSecret, function (error, res){
-	// 		if (error) { console.log(error); }
-	// 		response.json(JSON.parse(res));
-	// 	});
-	// });
-
-	// // get calories
-	// app.get('/calories/:time', ensureAuthenticated, function (request, response){
-	// 	httpsRequest('GET', 'api.fitbit.com', '/1/user/-/activities/calories/date/today/'+request.params.time+'.json', request.user.token, request.user.tokenSecret, function (error, res){
-	// 		if (error) { console.log(error); }
-	// 		response.json(JSON.parse(res));
-	// 	});
-	// });
-
-	// // get minutes sedentary, lightly/fairly/very active
-	// app.get('/minutes/:level/:time', ensureAuthenticated, function (request, response){
-	// 	httpsRequest('GET', 'api.fitbit.com', '/1/user/-/activities/'+request.params.level+'/date/today/'+request.params.time+'.json', request.user.token, request.user.tokenSecret, function (error, res){
-	// 		if (error) { console.log(error); }
-	// 		response.json(JSON.parse(res));
-	// 	});
-	// });
-
 	// logout
 	app.get('/logout', function (request, response){
 		request.logout();
