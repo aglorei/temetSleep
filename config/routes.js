@@ -22,7 +22,7 @@ module.exports = function (app){
 	app.get('/auth/fitbit/callback',
 		passport.authenticate('fitbit', {
 			successRedirect: '/',
-			failureRedirect: '/login',
+			failureRedirect: '/login'
 		})
 	);
 
