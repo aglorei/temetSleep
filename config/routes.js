@@ -10,7 +10,7 @@ module.exports = function (app){
 		response.render('login');
 	});
 
-	// login view
+	// about view
 	app.get('/about', function (request, response){
 		response.render('about');
 	});
@@ -18,7 +18,7 @@ module.exports = function (app){
 	// use passport.authenticate() as route middleware to authenticate the request by first redirecting to fitbit.com
 	app.get('/auth/fitbit', passport.authenticate('fitbit'));
 
-	// if authentication fails, redirect home. otherwise, direct to app.get '/account'
+	// if authentication fails, redirect home. otherwise, direct to app.get '/login'
 	app.get('/auth/fitbit/callback',
 		passport.authenticate('fitbit', {
 			successRedirect: '/',
@@ -26,7 +26,7 @@ module.exports = function (app){
 		})
 	);
 
-	// account (authenticated) view
+	// dashboard (authenticated) view
 	app.get('/', ensureAuthenticated, function (request, response){
 		response.render('index');
 	});
@@ -109,8 +109,11 @@ module.exports = function (app){
 				method: httpsMethod,
 				hostname: host,
 				path: path,
-				headers: { Authorization: oauthString }
-			}, function (sendResponse){
+				headers: {
+					Authorization: oauthString
+				}
+			},
+			function (sendResponse){
 				var data = '';
 				sendResponse.setEncoding('utf8');
 				sendResponse.on('data', function (chunk){
